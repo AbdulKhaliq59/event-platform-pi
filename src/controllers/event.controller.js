@@ -41,7 +41,6 @@ export const addEvent = async (req, res) => {
       event: savedEvent,
     });
   } catch (error) {
-    console.error("Error creating or saving event:", error);
     return res.status(500).json({
       success: false,
       error: "Internal server error",
@@ -57,7 +56,6 @@ export const getAllEvents = async (req, res) => {
       events,
     });
   } catch (error) {
-    console.error("Error fetching events:", error);
     return res.status(500).json({
       success: false,
       error: "Internal server error",
@@ -80,7 +78,6 @@ export const getEventById = async (req, res) => {
       event,
     });
   } catch (error) {
-    console.error("Error fetching event by ID:", error);
     return res.status(500).json({
       success: false,
       error: "Internal server error",
@@ -103,7 +100,6 @@ export const deleteEvent = async (req, res) => {
       message: "Event deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting event:", error);
     return res.status(500).json({
       success: false,
       error: "Internal server error",
@@ -115,18 +111,26 @@ export const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, date, location, ticketSlots, pictureUrl } = req.body;
+    const updatedFields = {
+      title,
+      date,
+      location,
+      ticketSlots,
+    };
 
-    const updatedEvent = await Event.findByIdAndUpdate(
-      id,
-      {
-        title,
-        date,
-        location,
-        ticketSlots,
-        pictureUrl,
-      },
-      { new: true }
-    );
+    // Check if pictureUrl is provided
+    if (pictureUrl) {
+      // Upload the pictureUrl to cloudinary
+      const result = await cloudinaryV2.uploader.upload(pictureUrl, {
+        folder: "event-pictures",
+      });
+      // Set the pictureUrl in the updatedFields
+      updatedFields.pictureUrl = result.secure_url;
+    }
+
+    const updatedEvent = await Event.findByIdAndUpdate(id, updatedFields, {
+      new: true,
+    });
 
     if (!updatedEvent) {
       return res.status(404).json({
@@ -140,7 +144,6 @@ export const updateEvent = async (req, res) => {
       event: updatedEvent,
     });
   } catch (error) {
-    console.error("Error updating event:", error);
     return res.status(500).json({
       success: false,
       error: "Internal server error",
