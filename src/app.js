@@ -11,6 +11,10 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors());
 app.use("/auth", AuthenticationRoutes);
 app.use("/", eventRoutes);
-
+app.use("/", (req, res) => {
+  res.status(200).json({
+    message: "*** Welcome to Event PM API ***",
+  });
+});
 
 export { app };
