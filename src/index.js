@@ -4,7 +4,6 @@ import { app } from "./app.js";
 dotenv.config();
 
 const port = process.env.PORT || 4040;
-console.log("MONGO PASSWORD", process.env.MONGO_PASSWORD);
 const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.dat24l6.mongodb.net/?retryWrites=true&w=majority`;
 mongoose.connect(uri, {
   tls: true,
