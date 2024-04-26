@@ -10,6 +10,7 @@ import { validateDate } from "../middlewares/validator.js";
 import {
   bookTicket,
   cancelTicket,
+  getBookedTickets,
   getUserTickets,
 } from "../controllers/booking.controller.js";
 import { isAdmin, isAuthorized } from "../middlewares/protected.js";
@@ -24,5 +25,6 @@ router.patch("/event/:id", isAdmin, updateEvent);
 router.post("/booking", isAuthorized, bookTicket);
 router.get("/user/tickets", isAuthorized, getUserTickets);
 router.delete("/user/tickets/:ticketId", isAuthorized, cancelTicket);
+router.get("/booked-tickets", isAdmin, getBookedTickets);
 
 export default router;

@@ -23,7 +23,6 @@ export const isAuthorized = (req, res, next) => {
 
 export const isAdmin = (req, res, next) => {
   const authorizationHeader = req.headers["authorization"];
-  console.log("AURH", authorizationHeader);
   if (!authorizationHeader) {
     return res.status(401).json({
       error: "Unauthorized",

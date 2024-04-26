@@ -100,8 +100,6 @@ export const cancelTicket = async (req, res) => {
 export const getUserTickets = async (req, res) => {
   try {
     const userId = req.userId;
-
-    // Find all bookings for the logged-in user and populate event details
     const userTickets = await Booking.find({ userId }).populate("eventId");
 
     const formattedTickets = userTickets.map((ticket) => ({
@@ -111,6 +109,38 @@ export const getUserTickets = async (req, res) => {
       ticketSlots: ticket.numberOfTickets,
       bookingDate: ticket.bookingDate,
     }));
+
+    return res.status(200).json({
+      success: true,
+      tickets: formattedTickets,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
+  }
+};
+
+export const getBookedTickets = async (req, res) => {
+  try {
+    const allTickets = await Booking.find().populate("eventId");
+
+    const formattedTickets = allTickets.map((ticket) => {
+      const totalTickets = ticket.eventId.ticketSlots;
+      const bookedTickets = ticket.numberOfTickets;
+      const ticketRemain = totalTickets - bookedTickets;
+      const attendee = ticket.numberOfTickets;
+
+      return {
+        id: ticket._id,
+        title: ticket.eventId.title,
+        date: ticket.eventId.date,
+        location: ticket.eventId.location,
+        attendee: attendee,
+        ticketRemain: ticketRemain <= 0 ? "Soldout" : ticketRemain,
+      };
+    });
 
     return res.status(200).json({
       success: true,
