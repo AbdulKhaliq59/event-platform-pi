@@ -50,7 +50,8 @@ export const addEvent = async (req, res) => {
 
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find();
+    const today = new Date();
+    const events = await Event.find({ date: { $gte: today } });
     return res.status(200).json({
       success: true,
       events,
